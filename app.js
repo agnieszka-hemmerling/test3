@@ -11,11 +11,12 @@ var express = require('express')
   , path = require('path');
 
 var app = express();
-
+var server = http.createServer(app)
 // all environments
 app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
+//app.set('view engine', 'haml-coffee');
 app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.bodyParser());
@@ -32,6 +33,13 @@ app.get('/', routes.index);
 app.get('/users', user.list);
 app.get('/hello', hellooo.route);
 
-http.createServer(app).listen(app.get('port'), function(){
+var io = require("socket.io").listen(server)
+
+io.sockets.on('connection', function (socket) {
+  io.socket.emit('news', { msg: 'welcome'});
+});
+
+
+server.listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
